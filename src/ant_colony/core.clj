@@ -1,6 +1,7 @@
 (ns ant-colony.core
   (:require [clojure.data.json :as JSON])
   (:require [ant-colony.antProperties :as Properties])
+  (:require [ant-colony.util :as Util])
   ;(:require [ant-colony.antFood :as Problem])
   (:require [ant-colony.antTSP :as Problem])
   )
@@ -22,12 +23,16 @@
 (defn pheromoneSprayer [nodes value pheromones]
   "Sprays a given pheromone value to the given path (determined by the node order)."
   (if (> (count nodes) 1)
-    (recur (drop 1 nodes) value (into [] (map-indexed (fn [i x] (into [] (map-indexed (fn [j y] (if (and (= i (first nodes)) (= j (second nodes)))
+    (recur (drop 1 nodes) value (into [] (map-indexed (fn [i x] (into [] (map-indexed (fn [j y] (if (or (and (not @Properties/directed) (or
+                                                                                                                                          (and (= i (first nodes)) (= j (second nodes)))
+                                                                                                                                          (and (= i (second nodes)) (= j (first nodes)))
+                                                                                                                                          ))
+                                                                                                        (and @Properties/directed (= i (first nodes)) (= j (second nodes))))
                                                                                                   (+ y value)
                                                                                                   y
                                                                                                   )) x))) pheromones))
            )
-    pheromones
+    (if @Properties/directed pheromones (Util/mirrorMatrix pheromones))
     )
   )
 
@@ -53,7 +58,7 @@
   "Main method of the algorithm - 1) all ants generate a step they want to do 2) the pheromones are updated"
   (let [newAntList (mapv updater (mapv
                                    (fn [v] (if (< (v :id) (* @steps (/ @Properties/antAmount @Properties/groupSpawn)))
-                                             (let [newPath (function v pheromones)
+                                             (let [newPath (function v edges pheromones)
                                                    ]
                                                {:id                    (v :id)
                                                 :position              newPath
@@ -72,16 +77,16 @@
     (println @steps)
     (if (and (not= stop -1) (< @steps stop))
       (recur (mapv (fn [x] (if (x :shouldSprayPheromones)
-                            {:id                    (x :id)
-                             :position              (x :position)
-                             :lastPosition          (x :lastPosition)
-                             :tourLength            0
-                             :alreadyVisited        []
-                             :shouldSprayPheromones false
-                             :goal                  (if (= (x :position) @Properties/start)
-                                                      @Properties/food
-                                                      @Properties/start)}
-                            x)) newAntList) edges newPheromoneList function updater stop)
+                             {:id                    (x :id)
+                              :position              (x :position)
+                              :lastPosition          (x :lastPosition)
+                              :tourLength            0
+                              :alreadyVisited        []
+                              :shouldSprayPheromones false
+                              :goal                  (if (= (x :position) @Properties/start)
+                                                       @Properties/food
+                                                       @Properties/start)}
+                             x)) newAntList) edges newPheromoneList function updater stop)
       [(mapv (fn [x] (if (x :shouldSprayPheromones)
                        {:id                    (x :id)
                         :position              (x :position)
@@ -95,16 +100,6 @@
                        x)) newAntList) edges newPheromoneList]
       )
     )
-  )
-
-(defn -main []
-  "Main method, entry point for the algorithm."
-  (let [[antsNew edges pheromones generateSolution updateAnt] (Problem/prepare)]
-    ;(step ants edges pheromones generateSolution updateAnt)
-    (reset! ants antsNew)
-    ;(println antsNew)
-    )
-  (println ants)
   )
 
 (defn resetEntries
@@ -123,8 +118,9 @@
 (defn initialize []
   (Properties/initialize)
   (let [[preparedAnts preparedEdges preparedPheromones preparedGenerateSolution preparedUpdateAnt] (Problem/prepare)
+        edges (if @Properties/directed preparedEdges (Util/mirrorMatrix preparedEdges))
         ]
-    (resetEntries preparedAnts preparedEdges preparedPheromones preparedGenerateSolution preparedUpdateAnt))
+    (resetEntries preparedAnts edges preparedPheromones preparedGenerateSolution preparedUpdateAnt))
   (reset! steps 1)
   (generateJSONOutput)
   )

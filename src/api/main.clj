@@ -25,15 +25,15 @@
 (defn getSettings [req]
   {:status  200
    :headers {"Content-Type" "text/json" "Access-Control-Allow-Origin" "*"}
-   :body    (JSON/write-str {:start @properties/start
-                             :food @properties/food
-                             :antAmount @properties/antAmount
-                             :antGroups @properties/groupSpawn
+   :body    (JSON/write-str {:start             @properties/start
+                             :food              @properties/food
+                             :antAmount         @properties/antAmount
+                             :antGroups         @properties/groupSpawn
                              :pheromoneConstant @properties/pheromoneConstant
-                             :pheromoneTicking @properties/pheromoneCoefficient
-                             :pheromoneBase @properties/pheromoneBase
-                             :tspFix @properties/TSPFixCoefficient
-                             :directed @properties/directed})})
+                             :pheromoneTicking  @properties/pheromoneCoefficient
+                             :pheromoneBase     @properties/pheromoneBase
+                             :tspFix            @properties/fixCoefficient
+                             :directed          @properties/directed})})
 
 (defn skip [req]
   {:status  200

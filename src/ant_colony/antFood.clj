@@ -1,29 +1,24 @@
 (ns ant-colony.antFood
-  (:require [ant-colony.antProperties :as Properties]))
+  (:require [ant-colony.antProperties :as Properties])
+  (:require [ant-colony.util :as Util]))
 
-; calculating the attractiveness for each edge
-; (simply by inverting the value so that the shortest path has the biggest attractiveness)
-(def attractiveness (mapv (fn [x] (mapv (fn [y] (if (> y 0) (/ 1 y) 0)) x)) Properties/edges))
-
-(defn getPath [step sum probabilities probability]
-  "Gets the a random path from the current set of possible edges according to ACO"
-  (if (> sum probability)
-    step
-    (recur (inc step) (+ sum (probabilities (inc step))) probabilities probability)
-    )
+(defn getAttractivenessVector [edges position alreadyVisited]
+  (mapv (fn [x] (if (> x 0) (/ 1 x) 0)) (into [] (map-indexed (fn [i x] (if (.contains alreadyVisited i)
+                                                                          (* x @Properties/fixCoefficient)
+                                                                          x
+                                                                          )) (edges position))))
   )
 
-(defn generateSolution [ant pheromones]
+(defn generateSolution [ant edges pheromones]
   "Function that generates the next path for a given ant with given pheromones trails."
-  (println pheromones)
   (let [pheromoneVector (pheromones (ant :position))
-        attractivenessVector (attractiveness (ant :position))
-        divisor (reduce + (map-indexed (fn [i x] (* x (pheromoneVector i))) (attractiveness (ant :position))))
+        attractivenessVector (getAttractivenessVector edges (ant :position) (ant :alreadyVisited))
+        divisor (reduce + (map-indexed (fn [i x] (* x (pheromoneVector i))) attractivenessVector))
         probabilities (into [] (map-indexed
                                  (fn [i x] (/ (* x (pheromoneVector i)) divisor))
                                  attractivenessVector))
         ]
-    (getPath 0 (probabilities 0) probabilities (rand))
+    (Util/getPath 0 (probabilities 0) probabilities (rand))
     )
   )
 
@@ -37,5 +32,5 @@
 
 (defn prepare []
   "Function that prepares the problem and packages it so that the core can execute it."
-  [@Properties/antList Properties/edges @Properties/pheromones generateSolution updateAnt]
+  [@Properties/antList (into [] (map-indexed (fn [i x] (into [] (map-indexed (fn [j y] (if (= i j) 0 y)) x))) Properties/edges)) @Properties/pheromones generateSolution updateAnt]
 )

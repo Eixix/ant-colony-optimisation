@@ -2,14 +2,14 @@
 
 (def start (atom 0)) ; point at which the ant hill is located
 (def food (atom 2)) ; point at which the food source is located
-(def antAmount (atom 49)) ; amount of ants which should be computed
+(def antAmount (atom 10)) ; amount of ants which should be computed
 
-(def pheromoneConstant (atom 35)) ; constant value by which the amount of to-be-sprayed pheromones is determined
+(def pheromoneConstant (atom 1)) ; constant value by which the amount of to-be-sprayed pheromones is determined
 (def pheromoneCoefficient (atom 0.1)) ; determines the pheromone ticking rate
 (def pheromoneBase (atom 1)) ; default value for the pheromone trails to prevent division by zeros
 
-(def TSPFixCoefficient (atom 10000)) ; the coefficient by which TSP graphs should be fixed to be complete
-(def groupSpawn (atom 7)) ; the amount of groups which should spawn. Very helpful for TSP problems.
+(def fixCoefficient (atom 10000)) ; the coefficient by which TSP graphs should be fixed to be complete
+(def groupSpawn (atom 1)) ; the amount of groups which should spawn. Very helpful for TSP problems.
 
 (def directed (atom true))
 
@@ -20,7 +20,7 @@
 ;            [0 0 3 0 0 1 0 0]
 ;            [0 0 0 5 0 0 1 0]
 ;            [0 0 0 0 0 8 0 1]
-;            [1 0 0 2 0 0 0 1]])
+;            [10 0 0 2 0 0 0 1]])
 
 ;(def edges [[10 1 10 10 10 10 10 10] ;self explanatory
 ;            [10 10 1 10 10 10 10 10]
@@ -97,7 +97,7 @@
   (reset! pheromoneConstant pheromoneConstantNew)
   (reset! pheromoneCoefficient pheromoneCoefficientNew)
   (reset! pheromoneBase pheromoneBaseNew)
-  (reset! TSPFixCoefficient TSPFixCoefficientNew)
+  (reset! fixCoefficient TSPFixCoefficientNew)
   (reset! groupSpawn groupSpawnNew)
   (reset! directed directedNew)
 
@@ -108,6 +108,6 @@
    :pheromoneConstant @pheromoneConstant
    :pheromoneTicking @pheromoneCoefficient
    :pheromoneBase @pheromoneBase
-   :tspFix @TSPFixCoefficient
+   :tspFix @fixCoefficient
    :directed @directed}
   )

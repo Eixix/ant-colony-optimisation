@@ -6,7 +6,11 @@ let running = false;
 let phLowerBorder = 1;
 let phUpperBorder = 10;
 let phDividend = 1;
+let circleDividend = 1;
 let directed = false;
+let hideGrey = false;
+let hideRed = false;
+let hideCircle = false;
 
 G6.registerEdge(
   "arc-running",
@@ -20,7 +24,9 @@ G6.registerEdge(
           x: startPoint.x,
           y: startPoint.y,
           fill: "#1890ff",
-          r: getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2,
+          r:
+            (getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2) /
+            circleDividend,
         },
         name: "circle-shape",
       });
@@ -54,7 +60,9 @@ G6.registerEdge(
           x: startPoint.x,
           y: startPoint.y,
           fill: "#1890ff",
-          r: getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2,
+          r:
+            (getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2) /
+            circleDividend,
         },
         name: "circle-shape",
       });
@@ -88,7 +96,9 @@ G6.registerEdge(
           x: startPoint.x,
           y: startPoint.y,
           fill: "#1890ff",
-          r: getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2,
+          r:
+            (getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2) /
+            circleDividend,
         },
         name: "circle-shape",
       });
@@ -122,7 +132,9 @@ G6.registerEdge(
           x: startPoint.x,
           y: startPoint.y,
           fill: "#1890ff",
-          r: getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2,
+          r:
+            (getAntsOnEdge(parseInt(cfg.source), parseInt(cfg.target)) * 2) /
+            circleDividend,
         },
         name: "circle-shape",
       });
@@ -147,7 +159,9 @@ G6.registerEdge(
           x: targetPoint.x,
           y: targetPoint.y,
           fill: "#1890ff",
-          r: getAntsOnEdge(parseInt(cfg.target), parseInt(cfg.source)) * 2,
+          r:
+            (getAntsOnEdge(parseInt(cfg.target), parseInt(cfg.source)) * 2) /
+            circleDividend,
         },
         name: "circle-shape",
       });
@@ -181,7 +195,9 @@ G6.registerEdge(
           x: targetPoint.x,
           y: targetPoint.y,
           fill: "#1890ff",
-          r: getAntsOnEdge(parseInt(cfg.target), parseInt(cfg.source)) * 2,
+          r:
+            (getAntsOnEdge(parseInt(cfg.target), parseInt(cfg.source)) * 2) /
+            circleDividend,
         },
         name: "circle-shape",
       });
@@ -356,13 +372,15 @@ function renderEdge(i, j) {
       ? antsOnEdge
       : `(>: ${antsOnEdge} <: ${antsOnReverseEdge})`;
 
-    if (antsOnEdge !== 0) {
-      running = "-running";
-      if (!directed && i !== j && antsOnReverseEdge !== 0) {
-        running += "-both";
+    if (!hideCircle) {
+      if (antsOnEdge !== 0) {
+        running = "-running";
+        if (!directed && i !== j && antsOnReverseEdge !== 0) {
+          running += "-both";
+        }
+      } else if (!directed && antsOnReverseEdge !== 0) {
+        running = "-running-reverse";
       }
-    } else if (!directed && antsOnReverseEdge !== 0) {
-      running = "-running-reverse";
     }
 
     if (pheromones[i][j] > phLowerBorder) {
@@ -373,22 +391,28 @@ function renderEdge(i, j) {
       Object.assign(completeStyles, directedStyles);
     }
 
-    if (i === j) {
-      data.edges.push({
-        type: "loop" + running,
-        source: "" + i,
-        target: "" + j,
-        label: `P: ${pheromones[i][j]} A: ${antsOnEdgeString} M: ${adjacencyMatrix[i][j]}`,
-        style: completeStyles,
-      });
-    } else {
-      data.edges.push({
-        type: (directed ? "arc" : "line") + running,
-        source: "" + i,
-        target: "" + j,
-        label: `P: ${pheromones[i][j]} A: ${antsOnEdgeString} M: ${adjacencyMatrix[i][j]}`,
-        style: completeStyles,
-      });
+    if (
+      (!hideGrey && pheromones[i][j] == phLowerBorder) ||
+      (!hideRed && completeStyles.stroke == "lightsalmon") ||
+      completeStyles.stroke == "limegreen"
+    ) {
+      if (i === j) {
+        data.edges.push({
+          type: "loop" + running,
+          source: "" + i,
+          target: "" + j,
+          label: `P: ${pheromones[i][j]} A: ${antsOnEdgeString} M: ${adjacencyMatrix[i][j]}`,
+          style: completeStyles,
+        });
+      } else {
+        data.edges.push({
+          type: (directed ? "arc" : "line") + running,
+          source: "" + i,
+          target: "" + j,
+          label: `P: ${pheromones[i][j]} A: ${antsOnEdgeString} M: ${adjacencyMatrix[i][j]}`,
+          style: completeStyles,
+        });
+      }
     }
   }
 }
@@ -561,6 +585,19 @@ function updateParameters(resData) {
   directed = resData.directed;
 }
 
+fetch("http://localhost:3000/getSettings")
+  .then((response) => response.json())
+  .catch(function () {
+    Swal.fire({
+      icon: "error",
+      title: "Connection error",
+      text: "Is the backend running?",
+    });
+  })
+  .then((resData) => {
+    updateParameters(resData);
+  });
+
 fetch("http://localhost:3000/init")
   .then((response) => response.json())
   .catch(function () {
@@ -574,19 +611,6 @@ fetch("http://localhost:3000/init")
     transformIntoG6Data(resData);
     graph.data(data);
     graph.render();
-  });
-
-fetch("http://localhost:3000/getSettings")
-  .then((response) => response.json())
-  .catch(function () {
-    Swal.fire({
-      icon: "error",
-      title: "Connection error",
-      text: "Is the backend running?",
-    });
-  })
-  .then((resData) => {
-    updateParameters(resData);
   });
 
 let accordionElements = document.getElementsByClassName("accordion");
@@ -638,6 +662,10 @@ document.getElementById("paramForm").addEventListener("submit", (e) => {
 document.getElementById("fphLowerBorder").value = phLowerBorder;
 document.getElementById("fphUpperBorder").value = phUpperBorder;
 document.getElementById("fphDividend").value = phDividend;
+document.getElementById("fcircleDividend").value = circleDividend;
+document.getElementById("fhideGrey").checked = hideGrey;
+document.getElementById("fhideRed").checked = hideRed;
+document.getElementById("fhideCircle").checked = hideCircle;
 
 document.getElementById("animForm").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -645,6 +673,10 @@ document.getElementById("animForm").addEventListener("submit", (e) => {
   phLowerBorder = e.target.elements.fphLowerBorder.value;
   phUpperBorder = e.target.elements.fphUpperBorder.value;
   phDividend = e.target.elements.fphDividend.value;
+  circleDividend = e.target.elements.fcircleDividend.value;
+  hideGrey = e.target.elements.fhideGrey.checked;
+  hideRed = e.target.elements.fhideRed.checked;
+  hideCircle = e.target.elements.fhideCircle.checked;
 
   updateAnimationProperties();
   graph.changeData(data);

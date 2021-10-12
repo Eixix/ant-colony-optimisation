@@ -1,5 +1,6 @@
 (ns ant-colony.antTSP
-  (:require [ant-colony.antProperties :as Properties]))
+  (:require [ant-colony.antProperties :as Properties])
+  (:require [ant-colony.util :as Util]))
 
 (defn completeGraph [graph]
   "Function that completes the given graph. Uses the Properties/TSPFixCoefficient to determine how big the virtaul edges should be."
@@ -8,22 +9,14 @@
     (into [] (map-indexed (fn [i x] (into [] (map-indexed (fn [j y] (if (= i j)
                                                                       0
                                                                       (if (= y 0)
-                                                                        (* @Properties/TSPFixCoefficient maxEntry)
+                                                                        (* @Properties/fixCoefficient maxEntry)
                                                                         y)
                                                                       )) x))) graph))
     )
   )
 
-; calculating the attractiveness for each edge
-; (simply by inverting the value so that the shortest path has the biggest attractiveness)
-(def attractiveness (mapv (fn [x] (mapv (fn [y] (if (= y 0) 0 (/ 1 y))) x)) (completeGraph Properties/edges)))
-
-(defn getPath [step sum probabilities probability]
-  "Gets the a random path from the current set of possible edges according to ACO"
-  (if (> sum probability)
-    step
-    (recur (inc step) (+ sum (probabilities (inc step))) probabilities probability)
-    )
+(defn getAttractivenessVector [edges position]
+  (mapv (fn [x] (if (= x 0) 0 (/ 1 x))) ((completeGraph edges) position))
   )
 
 (defn determineRelevance [ant index]
@@ -45,13 +38,13 @@
     )
   )
 
-(defn generateSolution [ant pheromones]
+(defn generateSolution [ant edges pheromones]
   "Function that generates the next path for a given ant with given pheromones trails."
   (let [modifiedAttractiveness (into [] (map-indexed (fn [i x]
                                                        (if (determineRelevance ant i)
                                                          (returnOverride ant i) x)
                                                        )
-                                                     (attractiveness (ant :position))
+                                                     (getAttractivenessVector edges (ant :position))
                                                      ))
         attractivenessSum (reduce + modifiedAttractiveness)
         modifiedPheromones (into [] (map-indexed (fn [i x]
@@ -67,7 +60,7 @@
                                    )
                                  modifiedAttractiveness ))
         ]
-   (getPath 0 (probabilities 0) probabilities (rand))
+   (Util/getPath 0 (probabilities 0) probabilities (rand))
    )
   )
 
