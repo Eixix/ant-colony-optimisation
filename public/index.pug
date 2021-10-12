@@ -1,0 +1,98 @@
+doctype html
+html
+  head
+    title Ant Graph Algorithms
+    link(rel='stylesheet', href='style.css')
+  body
+    div(id='container')
+      header
+        h1 Ant Colony Optimization
+      main
+        div(id='graphContainer')
+        div(id='infoBox')
+          div(class='content')
+            h2 Infobox
+            div
+              h4 Control
+              span Step:&nbsp;
+              span(id='stepCounter')
+              div(id='controlButtons')
+                button(onclick='updateGraph()') Manual Step
+                button(onclick='toggleSim()') Toggle Simulation
+                button(onclick='reloadSimulation()') Restart Simulation
+                br
+                div
+                  label(for='skipAmount') Skip Goal
+                  br
+                  input(type='number' name='skipAmount' id='skipAmount')
+                button(onclick='skip()') Skip
+            div(id='simProperties' class='infoEntry formContent')
+              h4 Simulation Properties
+              form(id='paramForm')
+                div
+                  label(for='fstart') Start
+                  br
+                  input(type='number' name='fstart' id='fstart')
+                div
+                  label(for='ffood') Food
+                  br
+                  input(type='number' name='ffood' id='ffood')
+                div
+                  label(for='famount') Ant Amount
+                  br
+                  input(type='number' name='famount' id='famount')
+                div
+                  label(for='fgroups') Ant Groups
+                  br
+                  input(type='number' name='fgroups' id='fgroups')
+                div
+                  label(for='fphconstant') Pheromones Constant
+                  br
+                  input(type='number' name='fffphconstantood' id='fphconstant')
+                div
+                  label(for='fphticking') Pheromones Ticking Rate
+                  br
+                  input(type='number' name='fphticking' id='fphticking' step='.001')
+                div
+                  label(for='fphbase') Pheromones Base Value
+                  br
+                  input(type='number' name='fphbase' id='fphbase' step='.001')
+                div
+                  label(for='ftspfix') TSP Fix Coefficient
+                  br
+                  input(type='number' name='ftspfix' id='ftspfix')
+                div
+                  label(for='fdirected') Directed Graph
+                  input(type='checkbox' name='fdirected' id='fdirected')
+                input(type='submit' value='Update Parameters' id='updateButton')
+            div(id='animProperties' class='infoEntry formContent')
+              h4 Animation Properties
+              form(id='animForm')
+                div
+                  label(for='fphLowerBorder') Pheromone Lower Border
+                  br
+                  input(type='number' name='fphLowerBorder' id='fphLowerBorder')
+                div
+                  label(for='fphUpperBorder') Pheromone Upper Border
+                  br
+                  input(type='number' name='fphUpperBorder' id='fphUpperBorder')
+                div
+                  label(for='fphDividend') Pheromone Dividend
+                  br
+                  input(type='number' name='fphDividend' id='fphDividend')
+                input(type='submit' value='Update Animation' id='visUpdateButton')
+            div(id='ants'  class='infoEntry')
+              h4 Ants
+              div(id='antContainer')
+            div(id='pheromones'  class='infoEntry')
+              h4 Pheromones
+              div(id='pheromoneContainer')
+            div(id='adjacencyMatrix' class='infoEntry')
+              h4 Adjacency Matrix
+              div(id='adjacencyContainer')
+      footer
+        div 
+          p Implemented in LISP (Clojure) by Tobias Betz and Patrick Gröger
+    script(src='https://cdn.jsdelivr.net/npm/@antv/g6@4.3.11/dist/g6.min.js')
+    script(src='https://cdn.jsdelivr.net/npm/sweetalert2@11.1.7/dist/sweetalert2.all.min.js')
+    script(src='index.js')
