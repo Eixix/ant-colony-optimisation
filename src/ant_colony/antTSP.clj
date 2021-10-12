@@ -16,6 +16,7 @@
   )
 
 (defn getAttractivenessVector [edges position]
+  "Returns a vector of the attractiveness for all points from the current point"
   (mapv (fn [x] (if (= x 0) 0 (/ 1 x))) ((completeGraph edges) position))
   )
 

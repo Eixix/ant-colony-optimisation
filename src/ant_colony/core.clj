@@ -51,6 +51,7 @@
   )
 
 (defn generateJSONOutput []
+  "Generates JSON out of the relevant atoms"
   (JSON/write-str {:step @steps :ants @ants :edges @edges :pheromones @pheromones :directed @Properties/directed})
   )
 
@@ -103,6 +104,7 @@
   )
 
 (defn resetEntries
+  "Resets all atoms"
   ([antsNew edgesNew pheromonesNew]
    (reset! ants antsNew)
    (reset! pheromones pheromonesNew)
@@ -116,6 +118,7 @@
   )
 
 (defn initialize []
+  "Sets initial values for atoms"
   (Properties/initialize)
   (let [[preparedAnts preparedEdges preparedPheromones preparedGenerateSolution preparedUpdateAnt] (Problem/prepare)
         edges (if @Properties/directed preparedEdges (Util/mirrorMatrix preparedEdges))
@@ -126,6 +129,7 @@
   )
 
 (defn apiEntry [stop]
+  "Gets called by the API to start the calculation"
   (if (= @steps 1) (initialize))
   (let [[ants edges pheromones] (step @ants @edges @pheromones @generateSolution @updateAnt stop)
         ]

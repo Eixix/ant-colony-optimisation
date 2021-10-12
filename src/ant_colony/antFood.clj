@@ -3,6 +3,7 @@
   (:require [ant-colony.util :as Util]))
 
 (defn getAttractivenessVector [edges position alreadyVisited]
+  "Returns a vector of the attractiveness for all points from the current point"
   (mapv (fn [x] (if (> x 0) (/ 1 x) 0)) (into [] (map-indexed (fn [i x] (if (.contains alreadyVisited i)
                                                                           (* x @Properties/fixCoefficient)
                                                                           x
