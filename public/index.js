@@ -454,35 +454,47 @@ function toggleSim() {
 
 function skip() {
   let params = new URLSearchParams();
-  params.append("amount", document.querySelector("#skipAmount").value);
+  let stepCounter = document.querySelector("#stepCounter").innerText;
+  let skipInputValue = document.querySelector("#skipAmount").value;
 
-  Swal.fire({
-    icon: "info",
-    title: "Skipping is in progress...",
-    html: "<div class='lds-ellipsis'><div></div><div></div><div></div><div></div></div>",
-    allowOutsideClick: false,
-    showConfirmButton: false,
-  });
+  // Only skip if reasonable
+  if (!!skipInputValue && skipInputValue > stepCounter) {
+    params.append("amount", skipInputValue);
 
-  fetch("http://localhost:3000/skip", {
-    method: "POST",
-    body: params,
-    timeout: 8000,
-  })
-    .then((response) => response.json())
-    .catch(function () {
-      Swal.fire({
-        icon: "error",
-        title: "Connection error",
-        text: "Is the backend running?",
-      });
-    })
-    .then((resData) => {
-      Swal.close();
-      console.log(resData);
-      transformIntoG6Data(resData);
-      graph.changeData(data);
+    Swal.fire({
+      icon: "info",
+      title: "Skipping is in progress...",
+      html: "<div class='lds-ellipsis'><div></div><div></div><div></div><div></div></div>",
+      allowOutsideClick: false,
+      showConfirmButton: false,
     });
+
+    fetch("http://localhost:3000/skip", {
+      method: "POST",
+      body: params,
+      timeout: 8000,
+    })
+      .then((response) => response.json())
+      .catch(function () {
+        Swal.fire({
+          icon: "error",
+          title: "Connection error",
+          text: "Is the backend running?",
+        });
+      })
+      .then((resData) => {
+        Swal.close();
+        console.log(resData);
+        transformIntoG6Data(resData);
+        graph.changeData(data);
+      });
+  } else {
+    Swal.fire({
+      icon: "error",
+      title: "You can only skip forward",
+      text: "Enter a number greater than the number you already skipped to!",
+    });
+  }
 }
 
 function reloadSimulation() {
