@@ -11,8 +11,8 @@
 (def fixCoefficient (atom 10000)) ; the coefficient by which TSP graphs should be fixed to be complete
 (def groupSpawn (atom 1)) ; the amount of groups which should spawn. Very helpful for TSP problems.
 
-(def alpha (atom 1))
-(def beta (atom 1))
+(def alpha (atom 1)) ; the exponent by which the edge weights are powered
+(def beta (atom 1)) ; the exponent by which the pheromone values are powered
 
 (def directed (atom true))
 
@@ -94,7 +94,7 @@
                                                             :goal                  @food}))))
   )
 
-(defn setSettings [startNew foodNew antAmountNew pheromoneConstantNew pheromoneCoefficientNew pheromoneBaseNew TSPFixCoefficientNew groupSpawnNew directedNew]
+(defn setSettings [startNew foodNew antAmountNew pheromoneConstantNew pheromoneCoefficientNew pheromoneBaseNew TSPFixCoefficientNew groupSpawnNew alphaNew betaNew directedNew]
   (reset! start startNew)
   (reset! food foodNew)
   (reset! antAmount antAmountNew)
@@ -104,6 +104,8 @@
   (reset! fixCoefficient TSPFixCoefficientNew)
   (reset! groupSpawn groupSpawnNew)
   (reset! directed directedNew)
+  (reset! alpha alphaNew)
+  (reset! beta betaNew)
 
   {:start @start
    :food @food
@@ -113,5 +115,7 @@
    :pheromoneTicking @pheromoneCoefficient
    :pheromoneBase @pheromoneBase
    :tspFix @fixCoefficient
-   :directed @directed}
+   :directed @directed
+   :alpha @alpha
+   :beta @beta}
   )

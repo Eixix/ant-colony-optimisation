@@ -2,8 +2,8 @@
   (:require [clojure.data.json :as JSON])
   (:require [ant-colony.antProperties :as Properties])
   (:require [ant-colony.util :as Util])
-  ;(:require [ant-colony.antFood :as Problem])
-  (:require [ant-colony.antTSP :as Problem])
+  (:require [ant-colony.antFood :as Problem])
+  ;(:require [ant-colony.antTSP :as Problem])
   )
 
 (def ants (atom []))

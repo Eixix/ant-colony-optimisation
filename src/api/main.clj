@@ -33,7 +33,9 @@
                              :pheromoneTicking  @properties/pheromoneCoefficient
                              :pheromoneBase     @properties/pheromoneBase
                              :tspFix            @properties/fixCoefficient
-                             :directed          @properties/directed})})
+                             :directed          @properties/directed
+                             :alpha             @properties/alpha
+                             :beta              @properties/beta})})
 
 (defn skip [req]
   {:status  200
@@ -54,6 +56,8 @@
                               (edn/read-string ((req :params) :phbase))
                               (edn/read-string ((req :params) :tspfix))
                               (edn/read-string ((req :params) :groups))
+                              (edn/read-string ((req :params) :alpha))
+                              (edn/read-string ((req :params) :beta))
                               (= ((req :params) :directed) "true")))}
   )
 

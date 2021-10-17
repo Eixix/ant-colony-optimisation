@@ -38,6 +38,14 @@ html
                   br
                   input(type='number' name='ffood' id='ffood')
                 div
+                  label(for='falpha') Alpha
+                  br
+                  input(type='number' name='falpha' id='falpha')
+                div
+                  label(for='fbeta') Beta
+                  br
+                  input(type='number' name='fbeta' id='fbeta')
+                div
                   label(for='famount') Ant Amount
                   br
                   input(type='number' name='famount' id='famount')
@@ -108,4 +116,4 @@ html
           p Implemented in LISP (Clojure) by Tobias Betz and Patrick Gröger
     script(src='https://cdn.jsdelivr.net/npm/@antv/g6@4.3.11/dist/g6.min.js')
     script(src='https://cdn.jsdelivr.net/npm/sweetalert2@11.1.7/dist/sweetalert2.all.min.js')
-    script(src='index.js')
+    script(src='index.js' defer)
