@@ -8,6 +8,7 @@
                  [org.clojure/data.json "2.4.0"]
                  [compojure "1.6.1"]
                  [http-kit "2.3.0"]
-                 [ring/ring-defaults "0.3.2"]]
+                 [ring/ring-defaults "0.3.2"]
+                 [org.clojure/math.numeric-tower "0.0.4"]]
   :aot :all
   :jvm-opts ["-Xmx8192M"])

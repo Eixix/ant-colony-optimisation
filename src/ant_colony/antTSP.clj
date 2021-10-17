@@ -1,6 +1,8 @@
 (ns ant-colony.antTSP
   (:require [ant-colony.antProperties :as Properties])
-  (:require [ant-colony.util :as Util]))
+  (:require [ant-colony.util :as Util])
+  (:require [clojure.math.numeric-tower :as Math])
+  )
 
 (defn completeGraph [graph]
   "Function that completes the given graph. Uses the Properties/TSPFixCoefficient to determine how big the virtaul edges should be."
@@ -47,17 +49,20 @@
                                                        )
                                                      (getAttractivenessVector edges (ant :position))
                                                      ))
-        attractivenessSum (reduce + modifiedAttractiveness)
         modifiedPheromones (into [] (map-indexed (fn [i x]
                                                        (if (determineRelevance ant i)
-                                                         0 x) ; no override needed because if the override happens only one path is available either way.
+                                                         (returnOverride ant i) x)
                                                        )
                                                      (pheromones (ant :position))
                                                      ))
-        pheromoneSum (reduce + modifiedPheromones)
+        divisor (reduce + (map-indexed (fn [i x] (* (Math/expt x @Properties/alpha)
+                                                    (Math/expt (modifiedPheromones i) @Properties/beta))
+                                         ) modifiedAttractiveness))
         probabilities (into [] (map-indexed
                                  (fn [i x]
-                                   (if (= x 0) 0 (/ (+ x (modifiedPheromones i)) (+ attractivenessSum pheromoneSum)))
+                                   (if (= x 0) 0 (/ (* (Math/expt x @Properties/alpha)
+                                                       (Math/expt (modifiedPheromones i) @Properties/beta))
+                                                    divisor))
                                    )
                                  modifiedAttractiveness ))
         ]

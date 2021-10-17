@@ -458,7 +458,7 @@ function skip() {
   let skipInputValue = document.querySelector("#skipAmount").value;
 
   // Only skip if reasonable
-  if (!!skipInputValue && skipInputValue > stepCounter) {
+  if (skipInputValue && skipInputValue > stepCounter) {
     params.append("amount", skipInputValue);
 
     Swal.fire({
