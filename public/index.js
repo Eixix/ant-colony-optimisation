@@ -334,6 +334,8 @@ function transformIntoG6Data(resData) {
     document.getElementById("ftspfix").setAttribute("disabled", "");
     document.getElementById("fdirected").setAttribute("disabled", "");
     document.getElementById("updateButton").setAttribute("disabled", "");
+    document.getElementById("falpha").setAttribute("disabled", "");
+    document.getElementById("fbeta").setAttribute("disabled", "");
   }
 
   let rootEl = document.getElementById("pheromoneContainer");
@@ -598,6 +600,8 @@ function updateParameters(resData) {
   document.getElementById("fphbase").value = resData.pheromoneBase;
   document.getElementById("ftspfix").value = resData.tspFix;
   document.getElementById("fdirected").checked = resData.directed;
+  document.getElementById("falpha").value = resData.alpha;
+  document.getElementById("fbeta").value = resData.beta;
 
   directed = resData.directed;
 }
@@ -613,21 +617,21 @@ fetch("http://localhost:3000/getSettings")
   })
   .then((resData) => {
     updateParameters(resData);
-  });
 
-fetch("http://localhost:3000/init")
-  .then((response) => response.json())
-  .catch(function () {
-    Swal.fire({
-      icon: "error",
-      title: "Connection error",
-      text: "Is the backend running?",
-    });
-  })
-  .then((resData) => {
-    transformIntoG6Data(resData);
-    graph.data(data);
-    graph.render();
+    fetch("http://localhost:3000/init")
+      .then((response) => response.json())
+      .catch(function () {
+        Swal.fire({
+          icon: "error",
+          title: "Connection error",
+          text: "Is the backend running?",
+        });
+      })
+      .then((resData) => {
+        transformIntoG6Data(resData);
+        graph.data(data);
+        graph.render();
+      });
   });
 
 let accordionElements = document.getElementsByClassName("accordion");
@@ -650,6 +654,8 @@ document.getElementById("paramForm").addEventListener("submit", (e) => {
   params.append("phbase", e.target.elements.fphbase.value);
   params.append("tspfix", e.target.elements.ftspfix.value);
   params.append("directed", e.target.elements.fdirected.checked);
+  params.append("alpha", e.target.elements.falpha.value);
+  params.append("beta", e.target.elements.fbeta.value);
 
   fetch("http://localhost:3000/settings", {
     method: "POST",

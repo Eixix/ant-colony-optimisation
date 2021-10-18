@@ -1,6 +1,7 @@
 (ns ant-colony.antFood
   (:require [ant-colony.antProperties :as Properties])
-  (:require [ant-colony.util :as Util]))
+  (:require [ant-colony.util :as Util])
+  (:require [clojure.math.numeric-tower :as Math]))
 
 (defn getAttractivenessVector [edges position alreadyVisited]
   "Returns a vector of the attractiveness for all points from the current point"
@@ -14,10 +15,15 @@
   "Function that generates the next path for a given ant with given pheromones trails."
   (let [pheromoneVector (pheromones (ant :position))
         attractivenessVector (getAttractivenessVector edges (ant :position) (ant :alreadyVisited))
-        divisor (reduce + (map-indexed (fn [i x] (* x (pheromoneVector i))) attractivenessVector))
+        divisor (reduce + (map-indexed (fn [i x] (* (Math/expt x @Properties/alpha)
+                                                    (Math/expt (pheromoneVector i) @Properties/beta))
+                                         ) attractivenessVector))
         probabilities (into [] (map-indexed
-                                 (fn [i x] (/ (* x (pheromoneVector i)) divisor))
-                                 attractivenessVector))
+                                 (fn [i x] (/ (* (Math/expt x @Properties/alpha)
+                                                 (Math/expt (pheromoneVector i) @Properties/beta))
+                                              divisor)
+                                   )
+                                 attractivenessVector ))
         ]
     (Util/getPath 0 (probabilities 0) probabilities (rand))
     )
