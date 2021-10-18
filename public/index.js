@@ -454,8 +454,12 @@ function toggleSim() {
 
 function skip() {
   let params = new URLSearchParams();
-  let stepCounter = document.querySelector("#stepCounter").innerText;
-  let skipInputValue = document.querySelector("#skipAmount").value;
+  let stepCounter = parseInt(
+    document.querySelector("#stepCounter").innerText
+  );
+let skipInputValue = parseInt(
+    document.querySelector("#skipAmount").value
+  );
 
   // Only skip if reasonable
   if (skipInputValue && skipInputValue > stepCounter) {
@@ -489,6 +493,7 @@ function skip() {
         graph.changeData(data);
       });
   } else {
+    console.log(stepCounter, " ", skipInputValue);
     Swal.fire({
       icon: "error",
       title: "You can only skip forward",
