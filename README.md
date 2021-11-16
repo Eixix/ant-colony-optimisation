@@ -4,7 +4,7 @@ To change the graph change the variable edges in `src/ant_colony/antProperties.c
 
 # 2. Execution
 
-After cloning the from inside the project directory
+After cloning from inside the project directory
 
 ## With Docker
 
